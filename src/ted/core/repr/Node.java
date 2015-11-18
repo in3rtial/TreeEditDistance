@@ -1,10 +1,13 @@
-package ted.repr;
+package ted.core.repr;
 
 
 import java.util.ArrayList;
 
 /**
- * Node representation used for most trees in here
+ * Node class, container of a label of type T, remembers its parents and its
+ * children. The constructor is kinda tricky, it adds the current node to the
+ * parent's children list, so initialize in a sensible order...
+ * @param <T> type of the labels, children and parents have the same type of labels
  */
 public class Node<T> {
 

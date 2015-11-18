@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="TreeEditDistance:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/TreeEditDistance_jar</output-path>
+    <root id="archive" name="TreeEditDistance.jar">
+      <element id="module-output" name="TreeEditDistance" />
+    </root>
+  </artifact>
+</component>
