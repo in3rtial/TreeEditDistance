@@ -31,25 +31,28 @@ ted.convenience.TED class where simple cost functions are defined and tree edit 
 these.
 
 ```java
-    static class UnitCost implements CostFunction<String> {
+// create a cost function for insertions and deletions
+// they all cost 1 for this example
+static class UnitCost implements CostFunction<String> {
 
-        @Override
-        public double getCost(String label) {
-            return 1;
-        }
+    @Override
+    public double getCost(String label) {
+        return 1;
     }
+}
 
-    static class EqualDistanceCost implements DistanceFunction<String, String> {
+// create a cost function for label substitution (relabeling)
+static class EqualDistanceCost implements DistanceFunction<String, String> {
 
-        @Override
-        public double getDistance(String label1, String label2) {
-            // to be used with unit cost, a substitution becomes equivalent to
-            // a delete and insert...
-            return label1.compareTo(label2) == 0 ? 0. : 2.;
-        }
+    @Override
+    public double getDistance(String label1, String label2) {
+        // to be used with unit cost, a substitution becomes equivalent to
+        // a delete and insert...
+        return label1.compareTo(label2) == 0 ? 0. : 2.;
     }
-    
-    // instantiate a new tree edit distance object
-    TreeEditDistance<String> distance = new TreeEditDistance<>(new UnitCost(), new UnitCost(), new EqualDistanceCost());
+}
+
+// instantiate a new tree edit distance object
+TreeEditDistance<String> distance = new TreeEditDistance<>(new UnitCost(), new UnitCost(), new EqualDistanceCost());
 ```
 
