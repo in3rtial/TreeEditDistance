@@ -4,7 +4,7 @@ import ted.core.distances.TreeEditDistance;
 import ted.core.interfaces.CostFunction;
 import ted.core.interfaces.DistanceFunction;
 
-import ted.convenience.StringTree;
+import ted.core.repr.StringTree;
 
 public final class Tests {
 

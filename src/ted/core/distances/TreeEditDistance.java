@@ -9,19 +9,20 @@ import ted.core.repr.OrderedLabeledTree;
 /**
  * Tree Edit Distance on Ordered Rooted Trees
  *
- * @param <T> type of the label of the tree
+ * @param <T> type of the label of the Ordered Rooted Tree.
  */
 public class TreeEditDistance<T> implements DistanceFunction<OrderedLabeledTree<T>,
         OrderedLabeledTree<T>> {
-
 
     private CostFunction<T> deletionCost, insertionCost;
     private DistanceFunction<T, T> substitutionCost;
 
 
     /**
-     * constructor
-     *  @param insertionCost    scoring function for insertions
+     * Tree Edit Distance constructor with functions that calculate cost of
+     * deletion, insertion and relabeling on labels.
+     *
+     * @param insertionCost    scoring function for insertions
      * @param deletionCost     scoring function for deletions
      * @param substitutionCost scoring function for label replacement (to -> from)
      */
@@ -35,32 +36,33 @@ public class TreeEditDistance<T> implements DistanceFunction<OrderedLabeledTree<
 
 
     /**
-     * calculate the tree edit cost for two subtrees (helper)
+     * Performs the calculation of the tree edit distance on two subtrees, given
+     * post-order indices of the subtrees. Fills the dynamic programming table at the suitable index.
      *
-     * @param tree1                   ...
-     * @param tree2                   ...
-     * @param keyRoot1                postorder index of the keyroot, first tree
-     * @param keyRoot2                postorder index of the keyroot, second tree
-     * @param dynamicProgrammingTable dynamic programming table to modify (tree cost)
+     * @param tree1                   first tree to compare
+     * @param tree2                   second tree to compare
+     * @param index1                  postorder index of the keyroot in the first tree
+     * @param index2                  postorder index of the keyroot in the second tree
+     * @param dynamicProgrammingTable dynamic programming table to modify
      */
-    public void treeToTreeDistance(OrderedLabeledTree<T> tree1,
-                                   OrderedLabeledTree<T> tree2,
-                                   int keyRoot1, int keyRoot2,
-                                   double[][] dynamicProgrammingTable) {
+    private void treeEditDistanceHelper(OrderedLabeledTree<T> tree1,
+                                        OrderedLabeledTree<T> tree2,
+                                        int index1, int index2,
+                                        double[][] dynamicProgrammingTable) {
         //region Initialization
         int[] FirstLMDS = tree1.getLeftmostDescendants();
         int[] SecondLMDS = tree2.getLeftmostDescendants();
         int p, q;
 
-        int m = keyRoot1 - FirstLMDS[keyRoot1] + 2;
-        int n = keyRoot2 - SecondLMDS[keyRoot2] + 2;
+        int m = index1 - FirstLMDS[index1] + 2;
+        int n = index2 - SecondLMDS[index2] + 2;
 
         // create a m x n matrix of zeros
         double[][] forestDistance = new double[m][n];
 
         // figure out the offset
-        int iOffset = FirstLMDS[keyRoot1] - 1;
-        int jOffset = SecondLMDS[keyRoot2] - 1;
+        int iOffset = FirstLMDS[index1] - 1;
+        int jOffset = SecondLMDS[index2] - 1;
         //endregion
 
         //region Distance Calculations
@@ -85,8 +87,8 @@ public class TreeEditDistance<T> implements DistanceFunction<OrderedLabeledTree<
 
                 // case 1
                 // x is an ancestor of i and y is an ancestor of j
-                if ((FirstLMDS[keyRoot1] == FirstLMDS[x + iOffset]) &&
-                        (SecondLMDS[keyRoot2] == SecondLMDS[y + jOffset])) {
+                if ((FirstLMDS[index1] == FirstLMDS[x + iOffset]) &&
+                        (SecondLMDS[index2] == SecondLMDS[y + jOffset])) {
                     double sub = substitutionCost.getDistance(label1, label2);
                     forestDistance[x][y] = Math.min(Math.min(
                                     // deletion
@@ -119,14 +121,15 @@ public class TreeEditDistance<T> implements DistanceFunction<OrderedLabeledTree<
 
 
     /**
-     * return the dynamic programming matrix for the tree edit distance between two whole trees
+     * Performs the tree edit distance calculation between two Ordered Labeled Trees.
      *
      * @param tree1 first whole tree to compare
      * @param tree2 second whole tree to compare
-     * @return dynamic programming table of distance
+     * @return dynamic programming table (can be interpreted for matches, or just get the distance by
+     * looking at the last cell on the lower right.
      */
-    public double[][] treeEditDistance(OrderedLabeledTree tree1,
-                                       OrderedLabeledTree tree2) {
+    public double[][] treeEditDistance(OrderedLabeledTree<T> tree1,
+                                       OrderedLabeledTree<T> tree2) {
         int sizeTree1 = tree1.getPostOrderLabels().size();
         int sizeTree2 = tree2.getPostOrderLabels().size();
 
@@ -141,7 +144,7 @@ public class TreeEditDistance<T> implements DistanceFunction<OrderedLabeledTree<
             keyRoot1 = keyRoots1[i];
             for (int j = 0; j != keyRoots2.length; ++j) {
                 keyRoot2 = keyRoots2[j];
-                treeToTreeDistance(tree1, tree2, keyRoot1, keyRoot2, treeDistances);
+                treeEditDistanceHelper(tree1, tree2, keyRoot1, keyRoot2, treeDistances);
             }
         }
         return treeDistances;
@@ -149,12 +152,12 @@ public class TreeEditDistance<T> implements DistanceFunction<OrderedLabeledTree<
 
 
     /**
-     * Compute the tree edit distance between two trees, according to the
+     * Computes the tree edit distance between two trees, according to the
      * cost functions specified in the tree edit distance declaration.
      *
      * @param tree1 first tree
      * @param tree2 second tree
-     * @return distance between the two
+     * @return tree edit distance between the two trees
      */
     public double getDistance(OrderedLabeledTree<T> tree1,
                               OrderedLabeledTree<T> tree2) {

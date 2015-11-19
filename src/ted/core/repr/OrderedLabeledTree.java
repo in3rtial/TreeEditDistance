@@ -7,7 +7,7 @@ import java.util.*;
 
 
 /**
- * Ordered Labeled Tree.
+ * Ordered Labeled Tree class. Don't give it a forest!
  */
 public class OrderedLabeledTree<T> {
 
@@ -22,24 +22,24 @@ public class OrderedLabeledTree<T> {
 
     /**
      * Ordered Labeled Tree that contains arbitrary data as labels.
-     * This is the internal constructor, can be used directly, or use the more friendly RTED constructor.
-     * @param brackets  The string representation is Vienna Dot Bracket and specifies the topology of the tree:
-     *  '(' : nesting symbol, adds a child and sets the position as a child of the current position
-     *  ')' : closing symbol, position = position.parent
-     *  e.g. (()()(()()))
-     *  These symbols are all that's necessary to create an ordered labeled tree.
-     * @param preOrderLabels labels of the tree, organized in a pre-order fashion already
+     * This is the internal constructor, can be used directly, or use the more friendly String Tree constructor
+     * if the labels are of type String (good enough for most cases).
+     *
+     * @param brackets       bracket notation that specifies the topology of the tree:
+     *                       '(' : nesting symbol, adds a child and sets the position as a child of the current position
+     *                       ')' : closing symbol, position = position.parent
+     *                       e.g. (()()(()()))
+     *                       These symbols are all that's necessary to create an ordered labeled tree.
+     * @param preOrderLabels labels of the tree, organized in a pre-order fashion.
      */
-    public OrderedLabeledTree(String brackets, ArrayList<T> preOrderLabels) throws IllegalArgumentException
-    {
+    public OrderedLabeledTree(String brackets, ArrayList<T> preOrderLabels) throws IllegalArgumentException {
         // check that the tree is really a tree, and is balanced
-        if(!Verifier.isValidTreeStructure(brackets))
-        {
+        if (!Verifier.isValidTreeStructure(brackets)) {
             throw new IllegalArgumentException("This structure seems unbalanced " + brackets);
         }
 
-        // instantiate the artificial root and start building the tree
-        String bracketsMinusTheRoot = brackets.substring(1, brackets.length()-2);
+        // instantiate the root and start building the tree
+        String bracketsMinusTheRoot = brackets.substring(1, brackets.length() - 2);
         root = new Node<>(null, preOrderLabels.get(0));
         Node<T> position = root;
 
@@ -50,7 +50,7 @@ public class OrderedLabeledTree<T> {
                 position = new Node<>(position, preOrderLabels.get(nodeCount));
 
                 nodeCount += 1;
-            }else if (c == ')')  // position goes up
+            } else if (c == ')')  // position goes up
             {
                 position = position.getParent();
             }
@@ -61,8 +61,7 @@ public class OrderedLabeledTree<T> {
         postOrderNodes = getPostOrderEnumeration(root);
         postOrderLabels = new ArrayList<>();
         assert preOrderLabels.size() == postOrderNodes.size();
-        for (int i = 0; i != postOrderNodes.size(); ++i)
-        {
+        for (int i = 0; i != postOrderNodes.size(); ++i) {
             // set the index of the nodes
             postOrderNodes.get(i).setIndex(i);
 
@@ -75,8 +74,7 @@ public class OrderedLabeledTree<T> {
         leftmostDescendants = new int[postOrderNodes.size()];
         for (int i = 0; i != postOrderNodes.size(); ++i) {
             position = postOrderNodes.get(i);
-            while(position.getChildren().size() != 0)
-            {
+            while (position.getChildren().size() != 0) {
                 position = position.getChildren().get(0);
             }
             leftmostDescendants[i] = position.getIndex();
@@ -105,26 +103,26 @@ public class OrderedLabeledTree<T> {
 
 
     /**
-     * get list of node pointers to the postorder enumeration
+     * Used by the getPostOrderEnumeration method to perform a post-order traversal
+     * of the tree, while filling an array of Nodes.
      *
-     * @param node root node of the tree
-     * @return an arraylist of the post-order traversal of the tree
+     * @param position pointer to the node in the tree.
      */
-    private void postorderHelper(Node<T> node, ArrayList<Node<T>> array) {
-        if (node != null) {
-            for (Node<T> n : node.getChildren()) {
-                postorderHelper(n, array);
+    private void postorderHelper(Node<T> position, ArrayList<Node<T>> postOrderNodes) {
+        if (position != null) {
+            for (Node<T> n : position.getChildren()) {
+                postorderHelper(n, postOrderNodes);
             }
-            array.add(node);
+            postOrderNodes.add(position);
         }
     }
 
 
     /**
-     * get list of node pointers to the postorder enumeration
+     * Computes a list of the nodes, in post-order traversal order.
      *
      * @param root root node of the tree
-     * @return an arraylist of the post-order traversal of the tree
+     * @return the nodes, in post-order traversal order.
      */
     private ArrayList<Node<T>> getPostOrderEnumeration(Node<T> root) {
         ArrayList<Node<T>> postOrderEnum = new ArrayList<>();
@@ -136,6 +134,7 @@ public class OrderedLabeledTree<T> {
     public Node<T> getRoot() {
         return root;
     }
+
 
     /**
      * getter
@@ -163,7 +162,6 @@ public class OrderedLabeledTree<T> {
     public int[] getKeyRoots() {
         return keyRoots;
     }
-
 
 
 }

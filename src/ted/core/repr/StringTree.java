@@ -1,16 +1,15 @@
-package ted.convenience;
-
-import ted.core.repr.Node;
-import ted.core.repr.OrderedLabeledTree;
+package ted.core.repr;
 
 import java.util.ArrayList;
 
 public class StringTree extends OrderedLabeledTree<String> {
 
     /**
-     * Builder for the
-     * @param brackets
-     * @return
+     * String Tree is the Ordered Labeled Tree with String labels.
+     * It is expected to be the most used interface for tree edit distance calculation.
+     * It also allows us to add a simple toString method.
+     * @param brackets bracket notation of the tree e.g. "{a{b}{c}}"
+     * @return a String Tree instance corresponding to the bracket notation
      */
     public StringTree(String brackets)
     {
@@ -40,9 +39,9 @@ public class StringTree extends OrderedLabeledTree<String> {
 
 
     /**
-     *
-     * @param brackets
-     * @return
+     * Reads the brackets and extracts the labels, in pre-order traversal order.
+     * @param brackets bracket notation of the tree e.g. "{a{b}{c}}"
+     * @return the labels of the tree, in pre-order traversal order
      */
     public static ArrayList<String> extractPreOrderLabels(String brackets)
     {
@@ -76,16 +75,21 @@ public class StringTree extends OrderedLabeledTree<String> {
         return postOrderLabels;
     }
 
-    private static void printHelper(Node<String> position, StringBuilder symbols)
+    /**
+     * Helper for the toString function, called recursively mostly. It is tasked with filling the labels StringBuilder.
+     * @param position node position in the tree, usually called on the root, and it calls itself on the subtrees.
+     * @param brackets the brackets notation of the String Tree
+     */
+    private static void toStringHelper(Node<String> position, StringBuilder brackets)
     {
         //
-        symbols.append("{");
-        symbols.append(position.getLabel());
+        brackets.append("{");
+        brackets.append(position.getLabel());
         for(Node<String> child : position.getChildren())
         {
-            printHelper(child, symbols);
+            toStringHelper(child, brackets);
         }
-        symbols.append("}");
+        brackets.append("}");
     }
 
 
@@ -93,7 +97,7 @@ public class StringTree extends OrderedLabeledTree<String> {
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        printHelper(getRoot(), builder);
+        toStringHelper(getRoot(), builder);
         return builder.toString();
     }
 }
