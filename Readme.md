@@ -19,9 +19,10 @@ It wraps calls to constructors and distance functions for hopefully the most com
 ```java
 // initialize the trees to compare
 StringTree tree1 = new StringTree("{f{d{a}{c{b}}}{e}}");
-StringTree tree2 = new StringTree"{f{c{d{a}{b}}}{e}}";
+StringTree tree2 = new StringTree"{f{c{d{a}{b}}}{e}}");
 
-// using the unit cost function (indel = 1, substitution = 2 if labels !=, 0 otherwise)
+// using the unit cost function
+// (indel = 1, substitution = 2 if labels are not equal, 0 otherwise)
 TED.computeDistance(tree1, tree2);
 ```
 
@@ -53,6 +54,8 @@ static class EqualDistanceCost implements DistanceFunction<String, String> {
 }
 
 // instantiate a new tree edit distance object
-TreeEditDistance<String> distance = new TreeEditDistance<>(new UnitCost(), new UnitCost(), new EqualDistanceCost());
+CostFunction<String> indelCost = new UnitCost();
+DistanceFunction<String, String> substitutionCost = new EqualDistanceCost();
+TreeEditDistance<String> distance = new TreeEditDistance<>(indelCost, indelCost, substitutionCost);
 ```
 
