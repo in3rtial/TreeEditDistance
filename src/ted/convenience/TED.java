@@ -38,6 +38,13 @@ public final class TED {
 
 
     //region Called From String
+
+    /**
+     * Compute the distance between two trees in bracket form (RTED format)
+     * @param bracket1 first tree in bracket format
+     * @param bracket2 second tree in bracket format
+     * @return tree edit distance between the two
+     */
     public static double computeDistance(String bracket1, String bracket2) {
         return computeDistance(new StringTree(bracket1), new StringTree(bracket2));
     }
